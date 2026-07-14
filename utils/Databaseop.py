@@ -65,9 +65,10 @@ def saveapi(api,userid=None,username=None):
             return [0,"User is not found"]
     except Exception as e:
         return [0,str(e)]
-    ROW.apikey==api
+    ROW.api=api
     try:
         db.session.commit()
+        return [1,"API saved successfully"]
     except Exception as e:
         db.session.rollback()
         return [0,str(e)]
@@ -89,7 +90,7 @@ def readdb(data,input=0):
             if not userid: #measn data is complelty wrong
                 return [0,"No user found"]
             try: #also check by username also 
-                ROW=db.query.filter_by(userid=userid).first()
+                ROW=db.session.query(User).filter_by(userid=userid).first()
             except Exception as e:
                 return [0,str(e)]
         if not ROW:
@@ -127,10 +128,10 @@ def writeconfig(data):
             return [0,"No api found"]
     except Exception as e:
         return [0,str(e)]
-    CONFIGROW=ROW.Logins[0] if ROW.Logins else None
+    CONFIGROW=ROW.Configs[0] if ROW.Configs else None
     if CONFIGROW is None:
-        CONFIGROW=Login()
-        ROW.Logins.append(CONFIGROW)
+        CONFIGROW=Config()
+        ROW.Configs.append(CONFIGROW)
     CONFIGROW.url=data.get("link")
     CONFIGROW.allowusers=allowusers
     try:
@@ -203,6 +204,21 @@ def writelogin(data):
         
 
 def readlogin(data):
+    code=data.get("code")
+    try:
+        ROW=db.session.query(Login).filter_by(code=code).first()
+        if not ROW:
+            return [0,"No Link associated to the account found"]
+        else:
+            return [1,ROW.userid]
+    except Exception as e:
+        return [0,str(e)]
+
+def getlink(userid):
+     ROW=db.session.query(Config).filter_by(userid=userid).first()
+     if not ROW:
+         return [0,"NO URL FOUND"]
+     return [1,ROW.url]
 
 def __hashing(password):
     return hashlib.sha256(password.encode()).hexdigest()

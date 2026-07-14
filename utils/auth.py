@@ -4,7 +4,7 @@ from flask_jwt_extended.exceptions import JWTExtendedException
 import os
 from config import config
 PUBLIC = {
-    
+    "frontend.index"
 }
 
 def enableauth(app):
