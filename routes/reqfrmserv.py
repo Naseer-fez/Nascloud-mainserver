@@ -20,6 +20,7 @@ def home(data):
     savethedata=writeconfig(data)
     if not  savethedata[0]:
         return jsonify({"return":savethedata[1]}),401
+    return jsonify({"return": "success"}), 200
     
     
 @reqfrmbac.route("/register/user/",methods=["POST"])

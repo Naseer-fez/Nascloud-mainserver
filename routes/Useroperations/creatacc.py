@@ -5,6 +5,8 @@ from utils.Databaseop import writedb
 
 
 accountcreationbp=Blueprint("createaccount",__name__)
+@accountcreationbp.route("/register",methods=["POST"])
+@accountcreationbp.route("/register/",methods=["POST"])
 @accountcreationbp.route("/createaccount/",methods=["POST"])
 @getjson
 def home(data):
@@ -12,8 +14,29 @@ def home(data):
     userid=writedb(data)
     if not userid[0]:
         return jsonify({"return":userid[1]}),401
+    uid = userid[1]
     username=data.get("username")
-    tooken=APIKEY(identity=username)
+    tooken=APIKEY(username)
     
-    return jsonify({"return":tooken,"userid":userid[1]}),200
+    from models.database import db, User, Login, Config
+    user = db.session.query(User).filter_by(userid=uid).first()
+    user.api = tooken
+    
+    import uuid
+    code = str(uuid.uuid4().hex[:8])
+    
+    login_entry = Login(userid=uid, code=code)
+    db.session.add(login_entry)
+    
+    config_entry = Config(userid=uid, url="", allowusers=True)
+    db.session.add(config_entry)
+    
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"return": str(e)}), 500
+        
+    delimited = f"{tooken}|{code}|"
+    return jsonify({"return":delimited,"userid":uid}),200
     

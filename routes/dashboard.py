@@ -14,7 +14,7 @@ def home(data):
         return jsonify({"return":"wrong credentials"}),401
     ROW=userdetail[1]
     tooken=APIKEY(uid=ROW.userid)
-    save= saveapi(userid=ROW.useid,username=ROW.username,api=tooken)
+    save= saveapi(userid=ROW.userid,username=ROW.username,api=tooken)
     if not save[0]:
         return jsonify({"return":save[1]}),401
     return jsonify({"return":tooken}),200
