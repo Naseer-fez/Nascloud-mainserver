@@ -208,17 +208,17 @@ def readlogin(data):
     try:
         ROW=db.session.query(Login).filter_by(code=code).first()
         if not ROW:
-            return [0,"No Link associated to the account found"]
+            return [0,"No Link associated to the account found", None]
         else:
-            return [1,ROW.userid]
+            return [1, ROW.userid, ROW.userpassword]
     except Exception as e:
-        return [0,str(e)]
+        return [0,str(e), None]
 
 def getlink(userid):
      ROW=db.session.query(Config).filter_by(userid=userid).first()
      if not ROW:
-         return [0,"NO URL FOUND"]
-     return [1,ROW.url]
+         return [0,"NO URL FOUND", False]
+     return [1, ROW.url, ROW.allowusers if ROW.allowusers is not None else True]
 
 def __hashing(password):
     return hashlib.sha256(password.encode()).hexdigest()
