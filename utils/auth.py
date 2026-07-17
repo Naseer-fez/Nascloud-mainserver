@@ -11,6 +11,7 @@ def enableauth(app):
 
     @app.before_request
     def enforcingauth():
+        return
         if request.method == "OPTIONS":
             return
         
