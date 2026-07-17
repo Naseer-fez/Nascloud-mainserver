@@ -15,11 +15,18 @@ from routes.Frontendreq import Frontendreq
 from routes.dashboard import dashbaord
 from utils.auth import enableauth
 from utils.ratelimiter import enableratelimiter
+from utils.logs import logs
 from datetime import timedelta
 load_dotenv()
 def createapp():
     app=Flask(__name__)
-    CORS(app)
+    CORS(
+        app,
+        resources={r"/*": {"origins": "*"}},
+        allow_headers=["*"],
+        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        supports_credentials=False,
+    )
     app.config["secret"]=os.getenv("secret")
     app.config["JWT_SECRET_KEY"]=os.getenv("jwt") or os.getenv("secret")
     routes=[healthbp,loginbp,accountcreationbp,deleteacc,updatebp,forgotbp,
@@ -36,6 +43,7 @@ def createapp():
     db.init_app(app)
     with app.app_context():
         db.create_all()
+    logs(app)
         
     return app
 
