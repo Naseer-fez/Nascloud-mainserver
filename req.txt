@@ -6,3 +6,4 @@ gunicorn
 flask_jwt_extended
 apirlpy
 request
+psycopg2-binary
