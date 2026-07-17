@@ -42,5 +42,5 @@ class Config(db.Model):
         index=True,
         nullable=True
     )
-    url=db.Column(db.String(768),nullable=True,unique=True)
+    url=db.Column(db.String(768),nullable=True)
     allowusers=db.Column(db.Boolean,nullable=True,default=True) ##measn allow users
