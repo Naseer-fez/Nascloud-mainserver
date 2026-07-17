@@ -1,9 +1,9 @@
 flask
 flask-cors
-dotenv
+python-dotenv
 flask_sqlalchemy 
 gunicorn
 flask_jwt_extended
 apirlpy
-request
+requests
 psycopg2-binary
