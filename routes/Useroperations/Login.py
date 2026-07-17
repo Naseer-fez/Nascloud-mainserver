@@ -43,6 +43,5 @@ def home(data):
         db.session.rollback()
         return jsonify({"return": str(e)}), 500
         
-    delimited = f"{api_key}|{code}|{server_url}"
-    return jsonify({"return": delimited, "userid": userid}), 200
+    return jsonify({"api_key": api_key, "code": code, "server_url": server_url, "userid": userid}), 200
     

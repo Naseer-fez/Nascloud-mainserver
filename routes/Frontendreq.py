@@ -13,17 +13,29 @@ def home(data): #send userid or username
     uniqueid=readlogin(data)
     if not uniqueid[0]:
         return jsonify({"return":uniqueid[1]}),401
-    tooken=create_access_token(identity=uniqueid[1])
-    return jsonify({"return":tooken,"userid":uniqueid[1]}),200
+    userid = uniqueid[1]
+    stored_password = uniqueid[2]  # userpassword from Login row (hashed or None)
+    
+    # If the Login entry has a userpassword set, verify it
+    if stored_password:
+        import hashlib
+        submitted_pw = data.get("userpassword", "")
+        if not submitted_pw:
+            return jsonify({"return": "Password is required for this access code."}), 401
+        hashed_submitted = hashlib.sha256(submitted_pw.encode()).hexdigest()
+        if hashed_submitted != stored_password:
+            return jsonify({"return": "Invalid password."}), 401
+    
+    tooken=create_access_token(identity=str(userid))
+    return jsonify({"return":tooken,"userid":userid}),200
     
 
 
 
 @Frontendreq.route("/url/",methods=["GET"])
-@getjson
-def index(data):
+def index():
     code = request.headers.get("code")
-    data["code"]=code
+    data = {"code": code}
     output=readlogin(data) ##Here retive from memory but for now use db
     if not output[0]:
         return jsonify({"return":output[1]}),401
@@ -32,5 +44,5 @@ def index(data):
     url_res = getlink(userid)
     if not url_res[0]:
         return jsonify({"return":url_res[1]}),404
-    return jsonify({"url":url_res[1]}),200
+    return jsonify({"url":url_res[1], "allowusers": url_res[2]}),200
     

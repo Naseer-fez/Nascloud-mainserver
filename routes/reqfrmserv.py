@@ -3,7 +3,7 @@ from utils.acceptjson import getjson
 from utils.Databaseop import readapi,writeconfig,writelogin
 reqfrmbac=Blueprint("backend",__name__)
 
-@reqfrmbac.route("/register/api/",methods=["GET"])
+@reqfrmbac.route("/register/api/",methods=["GET","POST"])
 @getjson
 def home(data):
     API=data.get("api")
@@ -15,7 +15,13 @@ def home(data):
     ngroklink=data.get("link")
     if not ngroklink:
         return jsonify({"return":"No link provided"}),401
-    allowusers=int(data.get("users"))
+    # Normalize users to boolean for the Config.allowusers column
+    raw_users = data.get("users", True)
+    if isinstance(raw_users, str):
+        allowusers = raw_users.lower() not in ("0", "false", "no", "")
+    else:
+        allowusers = bool(raw_users)
+    data["users"] = allowusers
     data["userid"]=ROW.userid
     savethedata=writeconfig(data)
     if not  savethedata[0]:

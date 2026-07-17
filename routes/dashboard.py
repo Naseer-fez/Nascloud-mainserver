@@ -17,7 +17,13 @@ def home(data):
     save= saveapi(userid=ROW.userid,username=ROW.username,api=tooken)
     if not save[0]:
         return jsonify({"return":save[1]}),401
-    return jsonify({"return":tooken}),200
+    
+    # Also return the code from the Login entry
+    from models.database import Login
+    login_entry = ROW.Logins[0] if ROW.Logins else None
+    code = login_entry.code if login_entry else ""
+    
+    return jsonify({"api_key": tooken, "code": code}), 200
     
     
 
