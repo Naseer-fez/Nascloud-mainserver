@@ -4,3 +4,4 @@ dotenv
 flask_sqlalchemy 
 gunicorn
 flask_jwt_extended
+apirlpy

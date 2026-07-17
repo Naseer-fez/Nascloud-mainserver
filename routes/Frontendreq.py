@@ -41,6 +41,18 @@ def index():
         return jsonify({"return":output[1]}),401
     userid = output[1]
     
+    # Security Layer: Identity Binding
+    auth_header = request.headers.get("auth", "")
+    try:
+        from flask_jwt_extended import decode_token
+        payload = decode_token(auth_header)
+        identity = payload.get("sub")
+        if str(identity) != str(userid):
+            return jsonify({"return": "Unauthorized: Token does not match this access code"}), 403
+    except Exception:
+        # Fallback for internal api_key requests which are allowed by auth.py
+        pass
+    
     url_res = getlink(userid)
     if not url_res[0]:
         return jsonify({"return":url_res[1]}),404

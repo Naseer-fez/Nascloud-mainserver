@@ -3,7 +3,7 @@ from flask_jwt_extended import decode_token
 from flask_jwt_extended.exceptions import JWTExtendedException
 import os
 from config import config
-PUBLIC = {
+PROTECTED_ENDPOINTS = {
     "frontend.index"
 }
 
@@ -14,7 +14,7 @@ def enableauth(app):
         if request.method == "OPTIONS":
             return
         
-        if request.endpoint  not in PUBLIC:
+        if request.endpoint not in PROTECTED_ENDPOINTS:
             return
         # return #For testing right now
         auth_header = request.headers.get("auth", "")
