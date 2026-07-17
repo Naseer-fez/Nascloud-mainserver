@@ -35,7 +35,10 @@ def createapp():
         app.register_blueprint(endpoint)
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(int(os.getenv("jwtduration",30)))
         #DATABASE
-    app.config['SQLALCHEMY_DATABASE_URI']=os.getenv("Database","sqlite:///users.db")
+    database_url = os.getenv("Database", "sqlite:///users.db")
+    if database_url and database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False   
     JWTManager(app)
     enableratelimiter(app)
