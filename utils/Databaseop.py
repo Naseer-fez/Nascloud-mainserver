@@ -2,6 +2,7 @@ from models.database import db,User,Config,Login
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 import hashlib
+from flask import current_app
 
 def writedb(data,update=0):
     #first extract the nesscary
@@ -65,6 +66,7 @@ def saveapi(api,userid=None,username=None):
             return [0,"User is not found"]
     except Exception as e:
         return [0,str(e)]
+    api=encription(text=api)
     ROW.api=api
     try:
         db.session.commit()
@@ -111,6 +113,7 @@ def readdb(data,input=0):
         
 
 def readapi(api):
+    api=encription(text=api) #decripting the data
     try:
         ROW=db.session.query(User).filter_by(api=api).first()
         if not ROW:
@@ -153,7 +156,7 @@ def getemail(email):
     
     
 def changepwd(useid,password):
-        ROW=db.session.query(User).filter_by(username=useid).first()
+        ROW=db.session.query(User).filter_by(userid=useid).first()
         password=__hashing(password)
         try:
             ROW.password=password
@@ -222,3 +225,21 @@ def getlink(userid):
 
 def __hashing(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+def encription(text: str, decrypt: bool = False) -> str:
+    key = current_app.config["secret"]
+
+    if isinstance(key, str):
+        key = key.encode()
+
+    if decrypt:
+        data = bytes.fromhex(text)
+    else:
+        data = text.encode()
+
+    result = bytes(
+        b ^ key[i % len(key)]
+        for i, b in enumerate(data)
+    )
+
+    return result.decode() if decrypt else result.hex()

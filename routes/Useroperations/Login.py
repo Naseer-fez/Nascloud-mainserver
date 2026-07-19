@@ -1,7 +1,7 @@
 from flask import Blueprint,jsonify
 from utils.acceptjson import getjson
 from utils.createapikey import APIKEY
-from utils.Databaseop import readdb,saveapi
+from utils.Databaseop import readdb,saveapi, encription
 from models.database import db, User, Login, Config
 loginbp=Blueprint("login",__name__)
 
@@ -18,9 +18,10 @@ def home(data):
     
     api_key = user.api if user.api else ""
     if not api_key:
-        
         api_key = APIKEY()
-        user.api = api_key
+        user.api = encription(api_key)
+    else:
+        api_key = encription(api_key, decrypt=True)
         
     login_entry = user.Logins[0] if user.Logins else None
     if not login_entry:

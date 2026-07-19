@@ -1,12 +1,11 @@
 from flask import Blueprint,jsonify
 from utils.acceptjson import getjson
 from utils.createapikey import APIKEY
-from utils.Databaseop import writedb
+from utils.Databaseop import writedb, encription
 
 
 accountcreationbp=Blueprint("createaccount",__name__)
 @accountcreationbp.route("/register",methods=["POST"])
-@accountcreationbp.route("/register/",methods=["POST"])
 @accountcreationbp.route("/createaccount/",methods=["POST"])
 @getjson
 def home(data):
@@ -20,7 +19,7 @@ def home(data):
     
     from models.database import db, User, Login, Config
     user = db.session.query(User).filter_by(userid=uid).first()
-    user.api = tooken
+    user.api = encription(tooken)
     
     import uuid
     code = str(uuid.uuid4().hex[:8])
