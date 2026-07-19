@@ -29,7 +29,7 @@ class Login(db.Model):
     index=True,
     nullable=False
         )
-    code=db.Column(db.String(10))
+    code=db.Column(db.String(10),unique=True)
     userpassword=db.Column(db.String(256),nullable=True)
     
     
