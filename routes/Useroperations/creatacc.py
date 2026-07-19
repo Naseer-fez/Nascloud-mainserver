@@ -5,7 +5,7 @@ from utils.Databaseop import writedb, encription
 
 
 accountcreationbp=Blueprint("createaccount",__name__)
-@accountcreationbp.route("/register",methods=["POST"])
+@accountcreationbp.route("/register/",methods=["POST"])
 @accountcreationbp.route("/createaccount/",methods=["POST"])
 @getjson
 def home(data):
