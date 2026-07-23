@@ -218,10 +218,22 @@ def readlogin(data):
         return [0,str(e), None]
 
 def getlink(userid):
+     from time import time
      ROW=db.session.query(Config).filter_by(userid=userid).first()
      if not ROW:
          return [0,"NO URL FOUND", False]
+     currenttime=int(time())
+     if ROW.valid<currenttime:
+         return [0,"Time exceeded create a another link ",False]
+     ROW.valid=currenttime+(24*7*60*60)
+     try:
+         db.session.commit()
+     except Exception as e:
+         db.session.rollback()
+         #Can punish for my fault
      return [1, ROW.url, ROW.allowusers if ROW.allowusers is not None else True]
+        
+         
 
 def __hashing(password):
     return hashlib.sha256(password.encode()).hexdigest()
