@@ -44,6 +44,6 @@ class Config(db.Model):
         nullable=True
     )
     url=db.Column(db.String(768),nullable=True)
-    valid=db.Column(db.Integer,default=lambda:(int(time.time())+
+    valid=db.Column(db.Integer,default=lambda:(int(time())+
                                                (24*7*60*60)))
     allowusers=db.Column(db.Boolean,nullable=True,default=True) ##measn allow users
