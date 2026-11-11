@@ -1,0 +1,10 @@
+flask
+flask-cors
+python-dotenv
+flask_sqlalchemy
+gunicorn
+flask_jwt_extended
+apirlpy
+requests
+psycopg[binary]
+psycopg2-binary
