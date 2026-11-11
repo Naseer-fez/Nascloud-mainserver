@@ -1,5 +1,6 @@
 from flask  import Flask
 import os
+import re
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -35,10 +36,18 @@ def createapp():
         app.register_blueprint(endpoint)
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(int(os.getenv("jwtduration",30)))
         #DATABASE
-    database_url = os.getenv("Database", "sqlite:///users.db")
-    if database_url and database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://", 1)
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    database_url = os.getenv("Database") or os.getenv("POSTGRES_URL") or os.getenv("DATABASE_URL")
+    if database_url:
+        match = re.search(r'([a-zA-Z][a-zA-Z0-9+_-]*://[^\s,"\'<>]+)', database_url)
+        if match:
+            database_url = match.group(1)
+        else:
+            database_url = database_url.strip().strip("'\"")
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False   
     JWTManager(app)
     enableratelimiter(app)
